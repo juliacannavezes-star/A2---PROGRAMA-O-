@@ -1,88 +1,112 @@
 import streamlit as st
 
-st.set_page_config(page_title="Mapa Interativo do Direito", layout="wide")
+st.set_page_config(page_title="JurisCenários: Simulador Jurídico", layout="wide")
 
-st.title("⚖️ Mapa Interativo do Direito")
-st.markdown("Escolha uma disciplina para explorar os conceitos essenciais do Direito Brasileiro.")
+st.title("⚖️ JurisCenários")
+st.markdown("Explore como o Direito Penal, Civil e Constitucional se aplicam em situações reais e hipotéticas.")
 
-# Sidebar de seleção
-materia = st.sidebar.selectbox(
-    "📘 Escolha uma disciplina",
-    ["Direito Penal", "Direito Civil", "Direito Constitucional "]
-)
-
-
-conteudo = {
-
-    "Direito Penal": {
-        "Conceitos-chave": {
-            "Crime": "Infração penal a que a lei comina pena de reclusão ou detenção.",
-            "Dolo e Culpa": "Dolo: intenção de cometer o crime. Culpa: ausência de intenção, mas com imprudência/negligência.",
-            "Princípio da Legalidade": "Não há crime sem lei anterior que o defina (art. 1º do CP)."
-        },
-        "Artigos Relevantes": [
-            "Art. 121 - Homicídio",
-            "Art. 213 - Estupro",
-            "Art. 5º, XXXIX da CF - Legalidade Penal"
+cenarios = {
+    "🚔 Fui abordado pela polícia sem motivo aparente": {
+        "Área do Direito": "Constitucional & Penal",
+        "Fundamento Legal": [
+            "Art. 5º, II da CF - 'ninguém será obrigado a fazer ou deixar de fazer alguma coisa senão em virtude de lei'",
+            "Lei de Abuso de Autoridade (Lei 13.869/2019)",
+            "Direito à liberdade e à dignidade da pessoa humana"
         ],
-        "Aplicações Práticas": [
-            "Julgamento de homicídios dolosos pelo Tribunal do Júri.",
-            "Redução de pena por arrependimento posterior."
+        "Análise Jurídica": """
+        A abordagem policial deve ter fundamento em suspeita razoável. Caso contrário, pode configurar abuso de autoridade. A Constituição garante a liberdade de ir e vir e a proteção contra ações arbitrárias do Estado.
+        """,
+        "Desdobramentos Possíveis": [
+            "Representação contra o agente público",
+            "Pedido de indenização por danos morais",
+            "Habeas corpus preventivo, em casos de repetição"
         ]
     },
 
-    "Direito Civil": {
-        "Conceitos-chave": {
-            "Pessoa Natural": "Todo ser humano, titular de direitos e deveres (art. 1º CC).",
-            "Capacidade Civil": "Aptidão para exercer direitos e deveres. Pode ser plena ou relativa.",
-            "Domicílio": "Residência habitual com ânimo definitivo (art. 70 CC)."
-        },
-        "Artigos Relevantes": [
-            "Art. 1º ao 4º - Das Pessoas Naturais",
-            "Art. 70 - Domicílio",
-            "Art. 11 ao 21 - Direitos da personalidade"
+    "🏠 O locador invadiu meu imóvel alugado sem autorização": {
+        "Área do Direito": "Civil",
+        "Fundamento Legal": [
+            "Art.  invasion of privacy and peaceful possession.",
+            "Lei do Inquilinato (Lei 8.245/91), art. 5º e seguintes",
+            "Art.  invasion of property — Art.  invasion of possession"
         ],
-        "Aplicações Práticas": [
-            "Registro de nascimento em cartório.",
-            "Interdição de pessoa incapaz por deficiência mental."
+        "Análise Jurídica": """
+        O locador perde o direito de posse direta ao alugar o imóvel. A entrada sem autorização configura violação à posse, podendo inclusive gerar responsabilização civil e penal (violação de domicílio - art.  invasion of home).
+        """,
+        "Desdobramentos Possíveis": [
+            "Ação de indenização por danos morais e materiais",
+            "Possibilidade de denúncia penal (violação de domicílio)",
+            "Rescisão do contrato por justa causa"
         ]
     },
 
-    "Direito Constitucional": {
-        "Conceitos-chave": {
-            "Constituição": "Norma superior que organiza o Estado e garante direitos fundamentais.",
-            "Poder Constituinte": "Capacidade de criar ou modificar a Constituição.",
-            "Direitos Fundamentais": "Liberdade, igualdade, dignidade e garantias individuais (art. 5º)."
-        },
-        "Artigos Relevantes": [
-            "Art. 1º ao 5º - Princípios fundamentais e direitos individuais",
-            "Art. 60 - Cláusulas pétreas",
-            "Art. 37 - Princípios da Administração Pública"
+    "💬 Fui ofendido em rede social por uma figura pública": {
+        "Área do Direito": "Civil & Penal",
+        "Fundamento Legal": [
+            "Código Civil - Art. 186 e 927 (responsabilidade civil)",
+            "Código Penal - Art. 139 (difamação), 140 (injúria)",
+            "Marco Civil da Internet (Lei 12.965/14)"
         ],
-        "Aplicações Práticas": [
-            "Controle de constitucionalidade de leis pelo STF.",
-            "Proteção contra censura e liberdade de expressão."
+        "Análise Jurídica": """
+        Ofensas em ambiente digital têm o mesmo valor jurídico que na vida real. Há possibilidade de ação por danos morais e processo criminal, dependendo da gravidade e da intencionalidade da conduta.
+        """,
+        "Desdobramentos Possíveis": [
+            "Pedido judicial de remoção de conteúdo e identificação do autor",
+            "Ação de indenização por dano moral",
+            "Queixa-crime por difamação ou injúria"
+        ]
+    },
+
+    "👨‍⚖️ Um projeto de lei quer restringir liberdade de expressão de jornalistas": {
+        "Área do Direito": "Constitucional",
+        "Fundamento Legal": [
+            "Art. 5º, IX da CF - liberdade de expressão",
+            "Art. 220 da CF - liberdade de imprensa",
+            "Cláusulas pétreas (Art. 60, §4º, IV - CF)"
+        ],
+        "Análise Jurídica": """
+        Qualquer tentativa de limitar a liberdade de imprensa ou expressão fere cláusulas pétreas da Constituição. Tais propostas são inconstitucionais por violar direitos fundamentais.
+        """,
+        "Desdobramentos Possíveis": [
+            "Ação Direta de Inconstitucionalidade (ADI)",
+            "Manifestação de órgãos de classe (OAB, ABI, etc)",
+            "Judicialização antes da sanção"
+        ]
+    },
+
+    "🔐 Empresa compartilhou meus dados pessoais sem consentimento": {
+        "Área do Direito": "Civil & Constitucional",
+        "Fundamento Legal": [
+            "Lei Geral de Proteção de Dados (LGPD - Lei 13.709/18)",
+            "Art. 5º, X e XII da CF - intimidade e sigilo de dados",
+            "CDC - relação de consumo e boa-fé objetiva"
+        ],
+        "Análise Jurídica": """
+        A empresa violou seu direito à privacidade. A LGPD exige consentimento claro e informado para o tratamento e compartilhamento de dados pessoais.
+        """,
+        "Desdobramentos Possíveis": [
+            "Denúncia à ANPD (Autoridade Nacional de Proteção de Dados)",
+            "Ação judicial por danos morais",
+            "Multa administrativa à empresa"
         ]
     }
 }
 
-dados = conteudo[materia]
+# Interface de seleção
+cenario_escolhido = st.selectbox("🧩 Escolha um cenário jurídico:", list(cenarios.keys()))
 
-st.header(f"📚 {materia}")
+dados = cenarios[cenario_escolhido]
 
-col1, col2 = st.columns(2)
+st.header(f"📌 Situação: {cenario_escolhido}")
+st.markdown(f"**📚 Área do Direito Envolvida:** {dados['Área do Direito']}")
 
-with col1:
-    st.subheader("🔑 Conceitos-Chave")
-    for titulo, explicacao in dados["Conceitos-chave"].items():
-        st.markdown(f"**{titulo}**: {explicacao}")
+st.subheader("🔎 Fundamento Legal")
+for artigo in dados["Fundamento Legal"]:
+    st.markdown(f"- {artigo}")
 
-with col2:
-    st.subheader("📜 Artigos Relevantes")
-    for artigo in dados["Artigos Relevantes"]:
-        st.markdown(f"- {artigo}")
+st.subheader("📖 Análise Jurídica")
+st.markdown(dados["Análise Jurídica"])
 
-st.markdown("---")
-st.subheader("⚖️ Aplicações Práticas")
-for exemplo in dados["Aplicações Práticas"]:
-    st.markdown(f"- {exemplo}")
+st.subheader("⚖️ Desdobramentos Possíveis")
+for desdobramento in dados["Desdobramentos Possíveis"]:
+    st.markdown(f"- {desdobramento}")
