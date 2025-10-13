@@ -1,112 +1,129 @@
 import streamlit as st
 
-st.set_page_config(page_title="JurisCenários: Simulador Jurídico", layout="wide")
+st.set_page_config(page_title="📔 Diário de Direitos", layout="wide")
 
-st.title("⚖️ JurisCenários")
-st.markdown("Explore como o Direito Penal, Civil e Constitucional se aplicam em situações reais e hipotéticas.")
+st.title("📔 Diário de Direitos")
+st.markdown("Explore situações do dia a dia sob a ótica do **Direito Penal, Civil e Constitucional**. Aprenda como os direitos se manifestam na prática.")
 
-cenarios = {
-    "🚔 Fui abordado pela polícia sem motivo aparente": {
-        "Área do Direito": "Constitucional & Penal",
-        "Fundamento Legal": [
-            "Art. 5º, II da CF - 'ninguém será obrigado a fazer ou deixar de fazer alguma coisa senão em virtude de lei'",
-            "Lei de Abuso de Autoridade (Lei 13.869/2019)",
-            "Direito à liberdade e à dignidade da pessoa humana"
+# Lista de casos cotidianos
+casos = {
+    "1. Uma briga de trânsito com agressão física": {
+        "Área do Direito": ["Penal", "Civil"],
+        "Descrição": "Durante uma discussão no trânsito, um dos motoristas agride fisicamente o outro, resultando em lesões leves.",
+        "Direitos Envolvidos": [
+            "Direito à integridade física",
+            "Responsabilidade civil por dano",
+            "Dever de reparação",
+            "Sanção penal"
         ],
-        "Análise Jurídica": """
-        A abordagem policial deve ter fundamento em suspeita razoável. Caso contrário, pode configurar abuso de autoridade. A Constituição garante a liberdade de ir e vir e a proteção contra ações arbitrárias do Estado.
-        """,
-        "Desdobramentos Possíveis": [
-            "Representação contra o agente público",
-            "Pedido de indenização por danos morais",
-            "Habeas corpus preventivo, em casos de repetição"
+        "Artigos Relevantes": [
+            "CP, Art. 129 - Lesão corporal",
+            "CC, Art. 186 e 927 - Responsabilidade civil por ato ilícito",
+            "CF, Art. 5º, V - Direito à indenização por dano moral"
+        ],
+        "Atores Jurídicos": ["Delegado de polícia", "Promotor de justiça", "Juiz criminal", "Juiz cível"],
+        "Consequências": [
+            "Ação penal pública incondicionada (lesão)",
+            "Possível prisão em flagrante",
+            "Indenização por danos morais e materiais"
         ]
     },
 
-    "🏠 O locador invadiu meu imóvel alugado sem autorização": {
-        "Área do Direito": "Civil",
-        "Fundamento Legal": [
-            "Art.  invasion of privacy and peaceful possession.",
-            "Lei do Inquilinato (Lei 8.245/91), art. 5º e seguintes",
-            "Art.  invasion of property — Art.  invasion of possession"
+    "2. Uma escola pública nega matrícula a uma criança com deficiência": {
+        "Área do Direito": ["Constitucional", "Civil"],
+        "Descrição": "Uma mãe tenta matricular seu filho com deficiência em uma escola pública, mas é informada que não há 'estrutura adequada'.",
+        "Direitos Envolvidos": [
+            "Direito à educação",
+            "Princípio da igualdade",
+            "Acesso universal a serviços públicos"
         ],
-        "Análise Jurídica": """
-        O locador perde o direito de posse direta ao alugar o imóvel. A entrada sem autorização configura violação à posse, podendo inclusive gerar responsabilização civil e penal (violação de domicílio - art.  invasion of home).
-        """,
-        "Desdobramentos Possíveis": [
-            "Ação de indenização por danos morais e materiais",
-            "Possibilidade de denúncia penal (violação de domicílio)",
-            "Rescisão do contrato por justa causa"
+        "Artigos Relevantes": [
+            "CF, Art. 205 - Direito à educação",
+            "CF, Art. 5º, caput e I - Igualdade",
+            "Lei Brasileira de Inclusão - Lei 13.146/15"
+        ],
+        "Atores Jurídicos": ["Defensoria Pública", "Ministério Público", "Juiz de Direito"],
+        "Consequências": [
+            "Mandado de segurança para garantir matrícula",
+            "Ação civil pública",
+            "Multa e responsabilização da administração"
         ]
     },
 
-    "💬 Fui ofendido em rede social por uma figura pública": {
-        "Área do Direito": "Civil & Penal",
-        "Fundamento Legal": [
-            "Código Civil - Art. 186 e 927 (responsabilidade civil)",
-            "Código Penal - Art. 139 (difamação), 140 (injúria)",
-            "Marco Civil da Internet (Lei 12.965/14)"
+    "3. Um político bloqueia um cidadão nas redes sociais públicas": {
+        "Área do Direito": ["Constitucional", "Civil"],
+        "Descrição": "Um vereador, usando rede social institucional, bloqueia um cidadão crítico ao seu mandato.",
+        "Direitos Envolvidos": [
+            "Liberdade de expressão",
+            "Acesso à informação pública",
+            "Transparência administrativa"
         ],
-        "Análise Jurídica": """
-        Ofensas em ambiente digital têm o mesmo valor jurídico que na vida real. Há possibilidade de ação por danos morais e processo criminal, dependendo da gravidade e da intencionalidade da conduta.
-        """,
-        "Desdobramentos Possíveis": [
-            "Pedido judicial de remoção de conteúdo e identificação do autor",
-            "Ação de indenização por dano moral",
-            "Queixa-crime por difamação ou injúria"
+        "Artigos Relevantes": [
+            "CF, Art. 5º, IV e XIV - Liberdade de expressão e acesso à informação",
+            "CF, Art. 37 - Princípios da Administração Pública",
+            "Jurisprudência do STF sobre redes institucionais"
+        ],
+        "Atores Jurídicos": ["Juiz Federal", "Advogado constitucionalista", "Ministério Público"],
+        "Consequências": [
+            "Obrigação de desbloquear o cidadão",
+            "Ação de indenização",
+            "Precedente constitucional aplicado"
         ]
     },
 
-    "👨‍⚖️ Um projeto de lei quer restringir liberdade de expressão de jornalistas": {
-        "Área do Direito": "Constitucional",
-        "Fundamento Legal": [
-            "Art. 5º, IX da CF - liberdade de expressão",
-            "Art. 220 da CF - liberdade de imprensa",
-            "Cláusulas pétreas (Art. 60, §4º, IV - CF)"
+    "4. Um banco vaza os dados de um cliente na internet": {
+        "Área do Direito": ["Civil", "Constitucional"],
+        "Descrição": "Dados bancários de um cliente são indevidamente compartilhados por uma fintech, sem autorização.",
+        "Direitos Envolvidos": [
+            "Direito à privacidade",
+            "Sigilo bancário",
+            "Proteção de dados pessoais"
         ],
-        "Análise Jurídica": """
-        Qualquer tentativa de limitar a liberdade de imprensa ou expressão fere cláusulas pétreas da Constituição. Tais propostas são inconstitucionais por violar direitos fundamentais.
-        """,
-        "Desdobramentos Possíveis": [
-            "Ação Direta de Inconstitucionalidade (ADI)",
-            "Manifestação de órgãos de classe (OAB, ABI, etc)",
-            "Judicialização antes da sanção"
-        ]
-    },
-
-    "🔐 Empresa compartilhou meus dados pessoais sem consentimento": {
-        "Área do Direito": "Civil & Constitucional",
-        "Fundamento Legal": [
-            "Lei Geral de Proteção de Dados (LGPD - Lei 13.709/18)",
-            "Art. 5º, X e XII da CF - intimidade e sigilo de dados",
-            "CDC - relação de consumo e boa-fé objetiva"
+        "Artigos Relevantes": [
+            "LGPD - Lei 13.709/18",
+            "CF, Art. 5º, X e XII - Privacidade e sigilo de dados",
+            "CC, Art. 927 - Responsabilidade civil objetiva"
         ],
-        "Análise Jurídica": """
-        A empresa violou seu direito à privacidade. A LGPD exige consentimento claro e informado para o tratamento e compartilhamento de dados pessoais.
-        """,
-        "Desdobramentos Possíveis": [
-            "Denúncia à ANPD (Autoridade Nacional de Proteção de Dados)",
-            "Ação judicial por danos morais",
-            "Multa administrativa à empresa"
+        "Atores Jurídicos": ["Advogado cível", "Autoridade Nacional de Proteção de Dados", "Juiz cível"],
+        "Consequências": [
+            "Multa administrativa à empresa",
+            "Ação de danos morais",
+            "Obrigação de retratação e correção"
         ]
     }
 }
 
-# Interface de seleção
-cenario_escolhido = st.selectbox("🧩 Escolha um cenário jurídico:", list(cenarios.keys()))
+# Interface
+caso_escolhido = st.selectbox("📖 Escolha um caso para explorar:", list(casos.keys()))
+dados = casos[caso_escolhido]
 
-dados = cenarios[cenario_escolhido]
+st.header(f"🔍 {caso_escolhido}")
+st.markdown(f"**📘 Descrição do caso:** {dados['Descrição']}")
 
-st.header(f"📌 Situação: {cenario_escolhido}")
-st.markdown(f"**📚 Área do Direito Envolvida:** {dados['Área do Direito']}")
+col1, col2 = st.columns(2)
 
-st.subheader("🔎 Fundamento Legal")
-for artigo in dados["Fundamento Legal"]:
-    st.markdown(f"- {artigo}")
+with col1:
+    st.subheader("⚖️ Área(s) do Direito Envolvida(s)")
+    for area in dados["Área do Direito"]:
+        st.markdown(f"- {area}")
 
-st.subheader("📖 Análise Jurídica")
-st.markdown(dados["Análise Jurídica"])
+    st.subheader("📚 Direitos Envolvidos")
+    for d in dados["Direitos Envolvidos"]:
+        st.markdown(f"- {d}")
 
-st.subheader("⚖️ Desdobramentos Possíveis")
-for desdobramento in dados["Desdobramentos Possíveis"]:
-    st.markdown(f"- {desdobramento}")
+    st.subheader("👥 Atores Jurídicos Típicos")
+    for a in dados["Atores Jurídicos"]:
+        st.markdown(f"- {a}")
+
+with col2:
+    st.subheader("📜 Artigos e Leis Relacionadas")
+    for artigo in dados["Artigos Relevantes"]:
+        st.markdown(f"- {artigo}")
+
+    st.subheader("🧾 Possíveis Consequências Jurídicas")
+    for c in dados["Consequências"]:
+        st.markdown(f"- {c}")
+
+st.markdown("---")
+st.info("💡 Este modelo ajuda a entender como o Direito se aplica a situações reais, conectando teoria e prática.")
+
