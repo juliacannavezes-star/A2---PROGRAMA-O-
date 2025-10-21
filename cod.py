@@ -1,129 +1,82 @@
 import streamlit as st
 
-st.set_page_config(page_title="📔 Diário de Direitos", layout="wide")
+st.set_page_config(page_title="Calculadora de Dosimetria Penal", page_icon="⚖️")
 
-st.title("📔 Diário de Direitos")
-st.markdown("Explore situações do dia a dia sob a ótica do **Direito Penal, Civil e Constitucional**. Aprenda como os direitos se manifestam na prática.")
+st.title("⚖️ Calculadora de Dosimetria Penal")
+st.markdown("""
+Este aplicativo segue as três fases da dosimetria de penas do **Código Penal Brasileiro**:
+1. **Pena Base** (Art. 59 CP) - Critérios de dosimetria
+2. **Circunstâncias** (Atenuantes/Agravantes) - Arts. 61 a 68 CP
+3. **Causas de Aumento/Diminuição** (Arts. 69 e 70 CP)
+""")
 
-# Lista de casos cotidianos
-casos = {
-    "1. Uma briga de trânsito com agressão física": {
-        "Área do Direito": ["Penal", "Civil"],
-        "Descrição": "Durante uma discussão no trânsito, um dos motoristas agride fisicamente o outro, resultando em lesões leves.",
-        "Direitos Envolvidos": [
-            "Direito à integridade física",
-            "Responsabilidade civil por dano",
-            "Dever de reparação",
-            "Sanção penal"
-        ],
-        "Artigos Relevantes": [
-            "CP, Art. 129 - Lesão corporal",
-            "CC, Art. 186 e 927 - Responsabilidade civil por ato ilícito",
-            "CF, Art. 5º, V - Direito à indenização por dano moral"
-        ],
-        "Atores Jurídicos": ["Delegado de polícia", "Promotor de justiça", "Juiz criminal", "Juiz cível"],
-        "Consequências": [
-            "Ação penal pública incondicionada (lesão)",
-            "Possível prisão em flagrante",
-            "Indenização por danos morais e materiais"
-        ]
-    },
+# Fase 1 - Pena Base
+st.header("1️⃣ Fase 1 - Pena Base (Art. 59 CP)")
+st.subheader("Critérios de dosimetria")
 
-    "2. Uma escola pública nega matrícula a uma criança com deficiência": {
-        "Área do Direito": ["Constitucional", "Civil"],
-        "Descrição": "Uma mãe tenta matricular seu filho com deficiência em uma escola pública, mas é informada que não há 'estrutura adequada'.",
-        "Direitos Envolvidos": [
-            "Direito à educação",
-            "Princípio da igualdade",
-            "Acesso universal a serviços públicos"
-        ],
-        "Artigos Relevantes": [
-            "CF, Art. 205 - Direito à educação",
-            "CF, Art. 5º, caput e I - Igualdade",
-            "Lei Brasileira de Inclusão - Lei 13.146/15"
-        ],
-        "Atores Jurídicos": ["Defensoria Pública", "Ministério Público", "Juiz de Direito"],
-        "Consequências": [
-            "Mandado de segurança para garantir matrícula",
-            "Ação civil pública",
-            "Multa e responsabilização da administração"
-        ]
-    },
+culpabilidade = st.slider("Culpabilidade", 0.0, 1.0, 0.5, help="Grau de reprovação da conduta")
+antecedentes = st.slider("Antecedentes", 0.0, 1.0, 0.5, help="Histórico do agente")
+conduta_social = st.slider("Conduta Social", 0.0, 1.0, 0.5, help="Comportamento em sociedade")
+personalidade = st.slider("Personalidade do Agente", 0.0, 1.0, 0.5)
+motivos = st.slider("Motivos do Crime", 0.0, 1.0, 0.5)
+circunstancias = st.slider("Circunstâncias do Crime", 0.0, 1.0, 0.5)
+comportamento_vitima = st.slider("Comportamento da Vítima", 0.0, 1.0, 0.5)
 
-    "3. Um político bloqueia um cidadão nas redes sociais públicas": {
-        "Área do Direito": ["Constitucional", "Civil"],
-        "Descrição": "Um vereador, usando rede social institucional, bloqueia um cidadão crítico ao seu mandato.",
-        "Direitos Envolvidos": [
-            "Liberdade de expressão",
-            "Acesso à informação pública",
-            "Transparência administrativa"
-        ],
-        "Artigos Relevantes": [
-            "CF, Art. 5º, IV e XIV - Liberdade de expressão e acesso à informação",
-            "CF, Art. 37 - Princípios da Administração Pública",
-            "Jurisprudência do STF sobre redes institucionais"
-        ],
-        "Atores Jurídicos": ["Juiz Federal", "Advogado constitucionalista", "Ministério Público"],
-        "Consequências": [
-            "Obrigação de desbloquear o cidadão",
-            "Ação de indenização",
-            "Precedente constitucional aplicado"
-        ]
-    },
+# Cálculo da pena base (exemplo simplificado)
+pena_base = (culpabilidade + antecedentes + conduta_social + personalidade + 
+             motivos + circunstancias + comportamento_vitima) / 7 * 12
 
-    "4. Um banco vaza os dados de um cliente na internet": {
-        "Área do Direito": ["Civil", "Constitucional"],
-        "Descrição": "Dados bancários de um cliente são indevidamente compartilhados por uma fintech, sem autorização.",
-        "Direitos Envolvidos": [
-            "Direito à privacidade",
-            "Sigilo bancário",
-            "Proteção de dados pessoais"
-        ],
-        "Artigos Relevantes": [
-            "LGPD - Lei 13.709/18",
-            "CF, Art. 5º, X e XII - Privacidade e sigilo de dados",
-            "CC, Art. 927 - Responsabilidade civil objetiva"
-        ],
-        "Atores Jurídicos": ["Advogado cível", "Autoridade Nacional de Proteção de Dados", "Juiz cível"],
-        "Consequências": [
-            "Multa administrativa à empresa",
-            "Ação de danos morais",
-            "Obrigação de retratação e correção"
-        ]
-    }
-}
+st.metric("Pena Base Estimada", f"{pena_base:.2f} anos")
 
-# Interface
-caso_escolhido = st.selectbox("📖 Escolha um caso para explorar:", list(casos.keys()))
-dados = casos[caso_escolhido]
-
-st.header(f"🔍 {caso_escolhido}")
-st.markdown(f"**📘 Descrição do caso:** {dados['Descrição']}")
+# Fase 2 - Circunstâncias
+st.header("2️⃣ Fase 2 - Circunstâncias (Arts. 61-68 CP)")
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("⚖️ Área(s) do Direito Envolvida(s)")
-    for area in dados["Área do Direito"]:
-        st.markdown(f"- {area}")
-
-    st.subheader("📚 Direitos Envolvidos")
-    for d in dados["Direitos Envolvidos"]:
-        st.markdown(f"- {d}")
-
-    st.subheader("👥 Atores Jurídicos Típicos")
-    for a in dados["Atores Jurídicos"]:
-        st.markdown(f"- {a}")
+    st.subheader("Atenuantes")
+    atenuante_menor = st.checkbox("Art. 65 - Agente menor de 21 anos")
+    atenuante_maior = st.checkbox("Art. 65 - Agente maior de 70 anos")
+    atenuante_arrependimento = st.checkbox("Art. 66 - Arrependimento")
+    atenuante_confissao = st.checkbox("Confissão espontânea")
 
 with col2:
-    st.subheader("📜 Artigos e Leis Relacionadas")
-    for artigo in dados["Artigos Relevantes"]:
-        st.markdown(f"- {artigo}")
+    st.subheader("Agravantes")
+    agravante_reincidente = st.checkbox("Art. 61 - Reincidência")
+    agravante_ocultacao = st.checkbox("Art. 62 - Ocultação de autoria")
+    agravante_motivo_futil = st.checkbox("Art. 63 - Motivo fútil")
+    agravante_crueldade = st.checkbox("Art. 64 - Crueldade")
 
-    st.subheader("🧾 Possíveis Consequências Jurídicas")
-    for c in dados["Consequências"]:
-        st.markdown(f"- {c}")
+# Cálculo das circunstâncias
+ajuste_circunstancias = 0
+if atenuante_menor or atenuante_maior or atenuante_arrependimento or atenuante_confissao:
+    ajuste_circunstancias -= 0.5  # Redução simplificada
+if agravante_reincidente or agravante_ocultacao or agravante_motivo_futil or agravante_crueldade:
+    ajuste_circunstancias += 0.5  # Aumento simplificado
 
-st.markdown("---")
-st.info("💡 Este modelo ajuda a entender como o Direito se aplica a situações reais, conectando teoria e prática.")
+pena_intermediaria = max(0, pena_base + ajuste_circunstancias)
+st.metric("Pena Após Circunstâncias", f"{pena_intermediaria:.2f} anos")
 
+# Fase 3 - Causas de Aumento/Diminuição
+st.header("3️⃣ Fase 3 - Causas de Aumento/Diminuição (Arts. 69-70 CP)")
+
+aumentos = st.number_input("Percentual de Aumento (%)", min_value=0, max_value=300, value=0)
+diminuicoes = st.number_input("Percentual de Diminuição (%)", min_value=0, max_value=100, value=0)
+
+# Cálculo final
+pena_final = pena_intermediaria * (1 + aumentos/100) * (1 - diminuicoes/100)
+pena_final = max(0, pena_final)  # Não permite pena negativa
+
+st.metric("Pena Final Estimada", f"{pena_final:.2f} anos")
+
+# Considerações finais
+st.warning("""
+**Atenção:** Esta calculadora é uma ferramenta auxiliar e não substitui 
+a análise jurídica profissional. Consulte sempre um advogado especializado.
+""")
+
+st.info(""**
+Referências legais:
+- Arts. 59 a 70 do Código Penal
+- Súmulas relevantes do STJ e STF
+**")
