@@ -1,82 +1,77 @@
 import streamlit as st
 
-st.set_page_config(page_title="Calculadora de Dosimetria Penal", page_icon="⚖️")
-
-st.title("⚖️ Calculadora de Dosimetria Penal")
-st.markdown("""
-Este aplicativo segue as três fases da dosimetria de penas do **Código Penal Brasileiro**:
-1. **Pena Base** (Art. 59 CP) - Critérios de dosimetria
-2. **Circunstâncias** (Atenuantes/Agravantes) - Arts. 61 a 68 CP
-3. **Causas de Aumento/Diminuição** (Arts. 69 e 70 CP)
-""")
+st.title("Calculadora de Dosimetria Penal")
+st.subheader("Baseada nas três fases do Código Penal Brasileiro")
 
 # Fase 1 - Pena Base
-st.header("1️⃣ Fase 1 - Pena Base (Art. 59 CP)")
-st.subheader("Critérios de dosimetria")
+st.header("Fase 1: Fixação da Pena-Base (Art. 59 CP)")
+st.write("Avalie os seguintes elementos:")
 
-culpabilidade = st.slider("Culpabilidade", 0.0, 1.0, 0.5, help="Grau de reprovação da conduta")
-antecedentes = st.slider("Antecedentes", 0.0, 1.0, 0.5, help="Histórico do agente")
-conduta_social = st.slider("Conduta Social", 0.0, 1.0, 0.5, help="Comportamento em sociedade")
+culpabilidade = st.slider("Culpabilidade", 0.0, 1.0, 0.5)
+antecedentes = st.slider("Antecedentes", 0.0, 1.0, 0.5)
+conduta_social = st.slider("Conduta Social", 0.0, 1.0, 0.5)
 personalidade = st.slider("Personalidade do Agente", 0.0, 1.0, 0.5)
 motivos = st.slider("Motivos do Crime", 0.0, 1.0, 0.5)
 circunstancias = st.slider("Circunstâncias do Crime", 0.0, 1.0, 0.5)
+consequencias = st.slider("Consequências do Crime", 0.0, 1.0, 0.5)
 comportamento_vitima = st.slider("Comportamento da Vítima", 0.0, 1.0, 0.5)
 
 # Cálculo da pena base (exemplo simplificado)
 pena_base = (culpabilidade + antecedentes + conduta_social + personalidade + 
-             motivos + circunstancias + comportamento_vitima) / 7 * 12
+             motivos + circunstancias + consequencias + comportamento_vitima) / 8
 
-st.metric("Pena Base Estimada", f"{pena_base:.2f} anos")
+st.metric("Intensidade da Pena-Base", f"{pena_base:.1%}")
 
-# Fase 2 - Circunstâncias
-st.header("2️⃣ Fase 2 - Circunstâncias (Arts. 61-68 CP)")
+# Fase 2 - Atenuantes e Agravantes
+st.header("Fase 2: Atenuantes e Agravantes (Arts. 61-68 CP)")
 
 col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Atenuantes")
-    atenuante_menor = st.checkbox("Art. 65 - Agente menor de 21 anos")
-    atenuante_maior = st.checkbox("Art. 65 - Agente maior de 70 anos")
-    atenuante_arrependimento = st.checkbox("Art. 66 - Arrependimento")
-    atenuante_confissao = st.checkbox("Confissão espontânea")
+    atenuante_generica = st.checkbox("Atenuante genérica (Art. 65)")
+    atenuante_especifica = st.number_input("Nº de atenuantes específicas", 0, 10, 0)
 
 with col2:
     st.subheader("Agravantes")
-    agravante_reincidente = st.checkbox("Art. 61 - Reincidência")
-    agravante_ocultacao = st.checkbox("Art. 62 - Ocultação de autoria")
-    agravante_motivo_futil = st.checkbox("Art. 63 - Motivo fútil")
-    agravante_crueldade = st.checkbox("Art. 64 - Crueldade")
+    agravante_generica = st.checkbox("Agravante genérica (Art. 61)")
+    agravante_especifica = st.number_input("Nº de agravantes específicas", 0, 10, 0)
 
-# Cálculo das circunstâncias
-ajuste_circunstancias = 0
-if atenuante_menor or atenuante_maior or atenuante_arrependimento or atenuante_confissao:
-    ajuste_circunstancias -= 0.5  # Redução simplificada
-if agravante_reincidente or agravante_ocultacao or agravante_motivo_futil or agravante_crueldade:
-    ajuste_circunstancias += 0.5  # Aumento simplificado
+# Cálculo de ajustes
+ajuste_atenuantes = (atenuante_generica * 0.1) + (atenuante_especifica * 0.05)
+ajuste_agravantes = (agravante_generica * 0.1) + (agravante_especifica * 0.05)
 
-pena_intermediaria = max(0, pena_base + ajuste_circunstancias)
-st.metric("Pena Após Circunstâncias", f"{pena_intermediaria:.2f} anos")
+pena_intermediaria = pena_base + ajuste_agravantes - ajuste_atenuantes
+pena_intermediaria = max(0.0, min(1.0, pena_intermediaria))  # Limita entre 0% e 100%
 
-# Fase 3 - Causas de Aumento/Diminuição
-st.header("3️⃣ Fase 3 - Causas de Aumento/Diminuição (Arts. 69-70 CP)")
+st.metric("Pena Após Atenuantes/Agravantes", f"{pena_intermediaria:.1%}")
 
-aumentos = st.number_input("Percentual de Aumento (%)", min_value=0, max_value=300, value=0)
-diminuicoes = st.number_input("Percentual de Diminuição (%)", min_value=0, max_value=100, value=0)
+# Fase 3 - Causas de Aumento e Diminuição
+st.header("Fase 3: Causas de Aumento e Diminuição (Arts. 69-70 CP)")
+
+col3, col4 = st.columns(2)
+
+with col3:
+    causas_aumento = st.number_input("Nº de causas de aumento", 0, 5, 0)
+    
+with col4:
+    causas_diminuicao = st.number_input("Nº de causas de diminuição", 0, 5, 0)
 
 # Cálculo final
-pena_final = pena_intermediaria * (1 + aumentos/100) * (1 - diminuicoes/100)
-pena_final = max(0, pena_final)  # Não permite pena negativa
+ajuste_final = (causas_aumento * 0.1) - (causas_diminuicao * 0.1)
+pena_final = pena_intermediaria + ajuste_final
+pena_final = max(0.0, min(1.0, pena_final))  # Limita entre 0% e 100%
 
-st.metric("Pena Final Estimada", f"{pena_final:.2f} anos")
+st.metric("Pena Final Calculada", f"{pena_final:.1%}")
 
-# Considerações finais
-st.warning("""
-**Atenção:** Esta calculadora é uma ferramenta auxiliar e não substitui 
-a análise jurídica profissional. Consulte sempre um advogado especializado.
+# Conversão para anos (exemplo)
+st.header("Resultado Final")
+pena_anos = pena_final * 30  # Supondo pena máxima de 30 anos
+st.write(f"Pena estimada: **{pena_anos:.1f} anos** (baseado em pena máxima de 30 anos)")
+
+st.markdown("---")
+st.caption("""
+**Nota:** Esta calculadora é uma simplificação didática. 
+A dosimetria real deve considerar a análise detalhada de cada caso concreto 
+e a aplicação integral da legislação penal.
 """)
-
-st.info(""**
-Referências legais:
-- Arts. 59 a 70 do Código Penal
-- Súmulas relevantes do STJ e STF
-**")
