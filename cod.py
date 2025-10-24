@@ -1,3 +1,5 @@
+pip install streamlit
+streamlit run app.py
 import streamlit as st
 
 st.set_page_config(page_title="Simulador de Multas e Penas de Trânsito 🚦", page_icon="🚗", layout="centered")
