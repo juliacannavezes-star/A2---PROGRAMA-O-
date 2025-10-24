@@ -1,18 +1,19 @@
-
 import streamlit as st
 
-st.set_page_config(page_title="Simulador de Multas e Penas de Trânsito 🚦", page_icon="🚗", layout="centered")
+# Configurações da página
+st.set_page_config(page_title="Simulador de Multas e Penas de Trânsito 🚗", page_icon="🚦", layout="centered")
 
+# Cabeçalho
 st.title("🚦 Simulador de Multas e Penas de Trânsito")
-st.write("Selecione as infrações abaixo para ver as penalidades correspondentes conforme o **Código de Trânsito Brasileiro (CTB)**:")
+st.markdown("Selecione as infrações abaixo para visualizar as penalidades correspondentes segundo o **Código de Trânsito Brasileiro (CTB)**.")
 
-# Dicionário com infrações
+# Dicionário com dados das infrações
 infracoes = {
     "🚗 Excesso de velocidade até 20% acima do limite": {
         "artigo": "Art. 218, I - CTB",
         "multa": "R$ 130,16",
         "pontos": "4 pontos (infração média)",
-        "consequencias": "Pode gerar aumento no seguro e suspensão em caso de reincidência."
+        "consequencias": "Pode gerar aumento no valor do seguro e suspensão em caso de reincidência."
     },
     "🚙 Excesso de velocidade acima de 50% do limite": {
         "artigo": "Art. 218, III - CTB",
@@ -30,7 +31,7 @@ infracoes = {
         "artigo": "Art. 252, VI - CTB",
         "multa": "R$ 293,47",
         "pontos": "7 pontos (gravíssima)",
-        "consequencias": "Pode agravar responsabilidade em caso de acidente."
+        "consequencias": "Pode agravar a responsabilidade do condutor em caso de acidente."
     },
     "🚫 Avançar sinal vermelho": {
         "artigo": "Art. 208 - CTB",
@@ -46,17 +47,32 @@ infracoes = {
     }
 }
 
-# Exibição interativa
-selecionadas = st.multiselect("Escolha uma ou mais infrações:", list(infracoes.keys()))
+# Checklist de seleção
+st.subheader("✅ Escolha as infrações cometidas:")
+selecionadas = st.multiselect("", list(infracoes.keys()))
 
+# Exibição dos resultados
 if selecionadas:
     for item in selecionadas:
         dados = infracoes[item]
-        st.subheader(item)
-        st.write(f"**Artigo:** {dados['artigo']}")
-        st.write(f"**Valor da multa:** {dados['multa']}")
-        st.write(f"**Pontuação:** {dados['pontos']}")
-        st.write(f"**Consequências:** {dados['consequencias']}")
         st.markdown("---")
+        st.header(item)
+
+        with st.expander("📜 Clique aqui para ver o artigo do CTB"):
+            st.write(f"**{dados['artigo']}**")
+
+        with st.expander("💰 Clique aqui para ver o valor da multa"):
+            st.write(f"**{dados['multa']}**")
+
+        with st.expander("⚠️ Clique aqui para ver a pontuação na CNH"):
+            st.write(f"**{dados['pontos']}**")
+
+        with st.expander("🚫 Clique aqui para ver as consequências"):
+            st.write(f"**{dados['consequencias']}**")
+
 else:
-    st.info("⬆️ Selecione uma infração acima para visualizar as penalidades correspondentes.")
+    st.info("⬆️ Selecione uma ou mais infrações acima para visualizar as informações detalhadas.")
+
+# Rodapé
+st.markdown("---")
+st.caption("Desenvolvido em Python com ❤️ no Streamlit | Dados baseados no Código de Trânsito Brasileiro (CTB)")
