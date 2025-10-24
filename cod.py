@@ -1,55 +1,61 @@
 import streamlit as st
 
-# ------------------------------
-# GLOSSÁRIO JURÍDICO INTERATIVO
-# ------------------------------
+st.set_page_config(page_title="Simulador de Multas e Penas de Trânsito 🚦", page_icon="🚗", layout="centered")
 
-st.set_page_config(page_title="Glossário Jurídico Interativo", layout="centered")
+st.title("🚦 Simulador de Multas e Penas de Trânsito")
+st.write("Selecione as infrações abaixo para ver as penalidades correspondentes conforme o **Código de Trânsito Brasileiro (CTB)**:")
 
-st.title("📘 Glossário Jurídico Interativo")
-st.write("Pesquise termos jurídicos, visualize suas definições e exemplos de uso prático.")
-
-# Base simples de termos jurídicos (pode ser expandida facilmente)
-glossario = {
-    "Habeas Corpus": {
-        "definicao": "Remédio constitucional que visa proteger o direito de locomoção quando alguém sofre ou está na iminência de sofrer violência ou coação ilegal.",
-        "exemplo": "Um advogado impetrou Habeas Corpus para libertar um cliente preso sem mandado judicial."
+# Dicionário com infrações
+infracoes = {
+    "🚗 Excesso de velocidade até 20% acima do limite": {
+        "artigo": "Art. 218, I - CTB",
+        "multa": "R$ 130,16",
+        "pontos": "4 pontos (infração média)",
+        "consequencias": "Pode gerar aumento no seguro e suspensão em caso de reincidência."
     },
-    "Ação Civil Pública": {
-        "definicao": "Instrumento processual usado para proteger interesses difusos e coletivos, como o meio ambiente ou o patrimônio público.",
-        "exemplo": "O Ministério Público ajuizou uma Ação Civil Pública contra uma empresa por poluição ambiental."
+    "🚙 Excesso de velocidade acima de 50% do limite": {
+        "artigo": "Art. 218, III - CTB",
+        "multa": "R$ 880,41 (multa triplicada)",
+        "pontos": "7 pontos (gravíssima)",
+        "consequencias": "Suspensão imediata do direito de dirigir e apreensão do veículo."
     },
-    "Dolo": {
-        "definicao": "Intenção de praticar um ato ilícito ou causar um resultado criminoso.",
-        "exemplo": "O réu agiu com dolo ao planejar e executar o crime de furto."
+    "🍺 Dirigir sob influência de álcool": {
+        "artigo": "Art. 165 - CTB",
+        "multa": "R$ 2.934,70",
+        "pontos": "7 pontos (gravíssima)",
+        "consequencias": "Suspensão do direito de dirigir por 12 meses e retenção do veículo."
     },
-    "Culpa": {
-        "definicao": "Conduta imprudente, negligente ou imperita, sem intenção de causar o resultado, mas que o produz.",
-        "exemplo": "O motorista foi condenado por homicídio culposo após causar um acidente fatal."
+    "📵 Usar celular ao volante": {
+        "artigo": "Art. 252, VI - CTB",
+        "multa": "R$ 293,47",
+        "pontos": "7 pontos (gravíssima)",
+        "consequencias": "Pode agravar responsabilidade em caso de acidente."
     },
-    "Prescrição": {
-        "definicao": "Perda do direito de punir ou de exigir judicialmente um direito devido ao decurso do tempo.",
-        "exemplo": "O juiz reconheceu a prescrição do crime, extinguindo a punibilidade do réu."
+    "🚫 Avançar sinal vermelho": {
+        "artigo": "Art. 208 - CTB",
+        "multa": "R$ 293,47",
+        "pontos": "7 pontos (gravíssima)",
+        "consequencias": "Pode gerar multa adicional se causar acidente."
     },
+    "💺 Não usar cinto de segurança": {
+        "artigo": "Art. 167 - CTB",
+        "multa": "R$ 195,23",
+        "pontos": "5 pontos (grave)",
+        "consequencias": "Condutor pode ser multado por cada passageiro sem cinto."
+    }
 }
 
-# Campo de busca
-busca = st.text_input("🔍 Buscar termo jurídico:")
+# Exibição interativa
+selecionadas = st.multiselect("Escolha uma ou mais infrações:", list(infracoes.keys()))
 
-# Se o usuário digitar algo, faz a busca
-if busca:
-    resultados = {termo: info for termo, info in glossario.items() if busca.lower() in termo.lower()}
-    
-    if resultados:
-        for termo, info in resultados.items():
-            st.subheader(f"📖 {termo}")
-            st.write(f"**Definição:** {info['definicao']}")
-            st.write(f"**Exemplo:** _{info['exemplo']}_")
-            st.markdown("---")
-    else:
-        st.warning("Nenhum termo encontrado. Tente outra palavra-chave.")
+if selecionadas:
+    for item in selecionadas:
+        dados = infracoes[item]
+        st.subheader(item)
+        st.write(f"**Artigo:** {dados['artigo']}")
+        st.write(f"**Valor da multa:** {dados['multa']}")
+        st.write(f"**Pontuação:** {dados['pontos']}")
+        st.write(f"**Consequências:** {dados['consequencias']}")
+        st.markdown("---")
 else:
-    st.info("Digite uma palavra-chave acima para buscar um termo jurídico.")
-
-# Rodapé
-st.markdown("<br><small>Desenvolvido em Streamlit • Versão 1.0</small>", unsafe_allow_html=True)
+    st.info("⬆️ Selecione uma infração acima para visualizar as penalidades correspondentes.")
