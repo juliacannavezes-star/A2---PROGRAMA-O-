@@ -10,8 +10,7 @@ st.markdown("Selecione as infrações abaixo para visualizar as penalidades corr
 # Dicionário com dados das infrações
 infracoes = {
     "🚗 Excesso de velocidade até 20% acima do limite": {
-        # "artigo": "Art. 218, I - CTB:  Transitar em velocidade superior à máxima permitida para o local, medida por instrumento ou equipamento hábil, em rodovias, vias de trânsito rápido, vias arteriais e demais vias:
-I - quando a velocidade for superior à máxima em até vinte por cento",
+        # "artigo": "Art. 218, I - CTB:  Transitar em velocidade superior à máxima permitida para o local, medida por instrumento ou equipamento hábil, em rodovias, vias de trânsito rápido, vias arteriais e demais vias: I - quando a velocidade for superior à máxima em até vinte por cento",
         "multa": "R$ 130,16",
         "pontos": "4 pontos (infração média)",
         "consequencias": "Pode gerar aumento no valor do seguro e suspensão em caso de reincidência."
