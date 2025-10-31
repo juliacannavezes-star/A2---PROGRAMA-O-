@@ -1,78 +1,61 @@
 import streamlit as st
+from bs4 import BeautifulSoup
+import pandas as pd
+import plotly.express as px
 
-# Configurações da página
-st.set_page_config(page_title="Simulador de Multas e Penas de Trânsito 🚗", page_icon="🚦", layout="centered")
+st.set_page_config(page_title="Explorador do Código Penal", layout="wide")
 
-# Cabeçalho
-st.title("🚦 Simulador de Multas e Penas de Trânsito")
-st.markdown("Selecione as infrações abaixo para visualizar as penalidades correspondentes segundo o **Código de Trânsito Brasileiro (CTB)**.")
+# --- Carregar o arquivo HTML ---
+with open("data/codigo_penal.html", "r", encoding="utf-8") as f:
+    soup = BeautifulSoup(f, "html.parser")
 
-# Dicionário com dados das infrações
-infracoes = {
-    "🚗 Excesso de velocidade até 20% acima do limite": {
-        "artigo": "Art. 218, I - CTB",
-        "multa": "R$ 130,16",
-        "pontos": "4 pontos (infração média)",
-        "consequencias": "Pode gerar aumento no valor do seguro e suspensão em caso de reincidência."
-    },
-    "🚙 Excesso de velocidade acima de 50% do limite": {
-        "artigo": "Art. 218, III - CTB: Transitar em velocidade superior à máxima permitida para o local, medida por instrumento ou equipamento hábil, em rodovias, vias de trânsito rápido, vias arteriais e demais vias:quando a velocidade for superior à máxima em mais de cinquenta por cento:",
-        "multa": "R$ 880,41 (multa triplicada)",
-        "pontos": "7 pontos (gravíssima)",
-        "consequencias": "Suspensão imediata do direito de dirigir e apreensão do veículo."
-    },
-    "🍺 Dirigir sob influência de álcool": {
-        "artigo": "Art. 165 - CTB: Dirigir sob a influência de álcool ou de qualquer outra substância psicoativa que determine dependência",
-        "multa": "R$ 2.934,70",
-        "pontos": "7 pontos (gravíssima)",
-        "consequencias": "Suspensão do direito de dirigir por 12 meses e retenção do veículo."
-    },
-    "📵 Usar celular ao volante": {
-        "artigo": "Art. 252, VI - CTB: Dirigir o veículo:  utilizando-se de fones nos ouvidos conectados a aparelhagem sonora ou de telefone celular; ",
-        "multa": "R$ 293,47",
-        "pontos": "7 pontos (gravíssima)",
-        "consequencias": "Pode agravar a responsabilidade do condutor em caso de acidente."
-    },
-    "🚫 Avançar sinal vermelho": {
-        "artigo": "Art. 208 - CTB: Avançar o sinal vermelho do semáforo ou o de parada obrigatória, exceto onde houver sinalização que permita a livre conversão à direita prevista no art. 44-A deste Código",
-        "multa": "R$ 293,47",
-        "pontos": "7 pontos (gravíssima)",
-        "consequencias": "Pode gerar multa adicional se causar acidente."
-    },
-    "💺 Não usar cinto de segurança": {
-        # "artigo": "Art. 167 - CTB: Deixar o condutor ou passageiro de usar o cinto de segurança, conforme previsto no art. 65:",
-        "multa": "R$ 195,23",
-        "pontos": "5 pontos (grave)",
-        "consequencias": "Condutor pode ser multado por cada passageiro sem cinto."
-    }
-}
+# Extrair artigos (linhas que começam com "Art.")
+artigos = []
+for p in soup.find_all("p"):
+    texto = p.get_text().strip()
+    if texto.startswith("Art."):
+        num = texto.split(" ")[1].split("º")[0].replace("-", "")
+        artigos.append({"Artigo": f"Art. {num}", "Texto": texto})
 
-# Checklist de seleção
-st.subheader("✅ Escolha as infrações cometidas:")
-selecionadas = st.multiselect("", list(infracoes.keys()))
+df = pd.DataFrame(artigos)
 
-# Exibição dos resultados
-if selecionadas:
-    for item in selecionadas:
-        dados = infracoes[item]
-        st.markdown("---")
-        st.header(item)
+# --- Interface do App ---
+st.title("⚖️ Explorador do Código Penal Brasileiro")
+st.write("Pesquise artigos e visualize o Código Penal de forma interativa.")
 
-        with st.expander("📜 Clique aqui para ver o artigo do CTB"):
-            st.write(f"**{dados['artigo']}**")
+aba = st.sidebar.radio("Menu", ["Pesquisar", "Gráficos", "Sobre"])
 
-        with st.expander("💰 Clique aqui para ver o valor da multa"):
-            st.write(f"**{dados['multa']}**")
+if aba == "Pesquisar":
+    termo = st.text_input("Digite número ou palavra-chave do artigo:")
+    if termo:
+        resultados = df[df["Texto"].str.contains(termo, case=False, na=False)]
+        if len(resultados) > 0:
+            st.success(f"{len(resultados)} artigo(s) encontrado(s):")
+            for _, row in resultados.iterrows():
+                st.markdown(f"### {row['Artigo']}")
+                st.write(row['Texto'])
+        else:
+            st.warning("Nenhum artigo encontrado.")
 
-        with st.expander("⚠️ Clique aqui para ver a pontuação na CNH"):
-            st.write(f"**{dados['pontos']}**")
+elif aba == "Gráficos":
+    st.subheader("Distribuição dos Artigos")
+    df["Número"] = df["Artigo"].str.extract(r"(\d+)").astype(int)
+    bins = [0, 50, 100, 200, 300, 400]
+    labels = ["1-50", "51-100", "101-200", "201-300", "301-400"]
+    df["Faixa"] = pd.cut(df["Número"], bins=bins, labels=labels)
+    graf = df["Faixa"].value_counts().sort_index().reset_index()
+    graf.columns = ["Faixa de Artigos", "Quantidade"]
 
-        with st.expander("🚫 Clique aqui para ver as consequências"):
-            st.write(f"**{dados['consequencias']}**")
+    fig = px.bar(graf, x="Faixa de Artigos", y="Quantidade", title="Quantidade de Artigos por Faixa Numérica")
+    st.plotly_chart(fig, use_container_width=True)
 
 else:
-    st.info("⬆️ Selecione uma ou mais infrações acima para visualizar as informações detalhadas.")
+    st.info("""
+    App criado para explorar o **Código Penal Brasileiro (Decreto-Lei nº 2.848/1940)**.
+    
+    - Busca rápida por artigos
+    - Visualização analítica por gráfico
+    - Design simples e moderno
 
-# Rodapé
-st.markdown("---")
-st.caption("Desenvolvido em Python com ❤️ no Streamlit | Dados baseados no Código de Trânsito Brasileiro (CTB)")
+    📚 Fonte: [Planalto.gov.br](https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm)
+    """)
