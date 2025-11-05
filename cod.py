@@ -1,61 +1,142 @@
 import streamlit as st
-from bs4 import BeautifulSoup
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+from datetime import datetime
 
-st.set_page_config(page_title="Explorador do Código Penal", layout="wide")
+# Configuração da página
+st.set_page_config(
+    page_title="Dashboard Interativo",
+    page_icon="📊",
+    layout="wide"
+)
 
-# --- Carregar o arquivo HTML ---
-with open("data/codigo_penal.html", "r", encoding="utf-8") as f:
-    soup = BeautifulSoup(f, "html.parser")
+# Título do aplicativo
+st.title("📊 Dashboard de Dados Governamentais")
+st.markdown("---")
 
-# Extrair artigos (linhas que começam com "Art.")
-artigos = []
-for p in soup.find_all("p"):
-    texto = p.get_text().strip()
-    if texto.startswith("Art."):
-        num = texto.split(" ")[1].split("º")[0].replace("-", "")
-        artigos.append({"Artigo": f"Art. {num}", "Texto": texto})
+# Carregamento de dados (substitua pela URL direta do arquivo)
+@st.cache_data
+def load_data():
+    # Converta o link do SharePoint para URL de download direto:
+    # Substitua toda a parte após "personal/" por "_layouts/15/download.aspx?share=..."
+    url = "https://gvmail-my.sharepoint.com/:x:/g/personal/c3007596_fgv_edu_br/ERkvqr-gd-lBlzJPUMarJ1cBo2IP_j0kCzea6SrFKD_oIg?e=24OG7j"
+    
+    try:
+        df = pd.read_excel(url)
+        return df
+    except Exception as e:
+        st.error(f"Erro ao carregar dados: {e}")
+        return None
 
-df = pd.DataFrame(artigos)
+df = load_data()
 
-# --- Interface do App ---
-st.title("⚖️ Explorador do Código Penal Brasileiro")
-st.write("Pesquise artigos e visualize o Código Penal de forma interativa.")
+if df is not None:
+    # Sidebar para filtros
+    st.sidebar.header("Filtros")
+    
+    # Exemplo de filtros (adaptar conforme colunas do seu dataset)
+    if 'categoria' in df.columns:
+        categorias = st.sidebar.multiselect(
+            "Selecione as categorias:",
+            options=df['categoria'].unique(),
+            default=df['categoria'].unique()
+        )
+        df = df[df['categoria'].isin(categorias)]
+    
+    if 'data' in df.columns:
+        data_min = df['data'].min()
+        data_max = df['data'].max()
+        data_range = st.sidebar.date_input(
+            "Selecione o período:",
+            value=(data_min, data_max),
+            min_value=data_min,
+            max_value=data_max
+        )
+        if len(data_range) == 2:
+            df = df[(df['data'] >= data_range[0]) & (df['data'] <= data_range[1])]
 
-aba = st.sidebar.radio("Menu", ["Pesquisar", "Gráficos", "Sobre"])
+    # Métricas principais
+    st.header("Principais Indicadores")
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        if 'valor' in df.columns:
+            total = df['valor'].sum()
+            st.metric("Valor Total", f"R$ {total:,.2f}")
+    
+    with col2:
+        if 'processos' in df.columns:
+            processos = df['processos'].count()
+            st.metric("Total de Processos", processos)
+    
+    with col3:
+        if 'tempo_medio' in df.columns:
+            tempo = df['tempo_medio'].mean()
+            st.metric("Tempo Médio (dias)", f"{tempo:.1f}")
+    
+    with col4:
+        if 'eficiencia' in df.columns:
+            eficiencia = df['eficiencia'].mean()
+            st.metric("Eficiência Geral", f"{eficiencia:.2%}")
 
-if aba == "Pesquisar":
-    termo = st.text_input("Digite número ou palavra-chave do artigo:")
-    if termo:
-        resultados = df[df["Texto"].str.contains(termo, case=False, na=False)]
-        if len(resultados) > 0:
-            st.success(f"{len(resultados)} artigo(s) encontrado(s):")
-            for _, row in resultados.iterrows():
-                st.markdown(f"### {row['Artigo']}")
-                st.write(row['Texto'])
-        else:
-            st.warning("Nenhum artigo encontrado.")
+    # Gráficos interativos
+    st.markdown("---")
+    st.header("Visualizações Interativas")
 
-elif aba == "Gráficos":
-    st.subheader("Distribuição dos Artigos")
-    df["Número"] = df["Artigo"].str.extract(r"(\d+)").astype(int)
-    bins = [0, 50, 100, 200, 300, 400]
-    labels = ["1-50", "51-100", "101-200", "201-300", "301-400"]
-    df["Faixa"] = pd.cut(df["Número"], bins=bins, labels=labels)
-    graf = df["Faixa"].value_counts().sort_index().reset_index()
-    graf.columns = ["Faixa de Artigos", "Quantidade"]
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if all(x in df.columns for x in ['categoria', 'valor']):
+            fig_bar = px.bar(
+                df,
+                x='categoria',
+                y='valor',
+                title="Valores por Categoria",
+                color='categoria'
+            )
+            st.plotly_chart(fig_bar, use_container_width=True)
+        
+        if 'data' in df.columns and 'valor' in df.columns:
+            fig_line = px.line(
+                df,
+                x='data',
+                y='valor',
+                title="Evolução Temporal",
+                color='categoria' if 'categoria' in df.columns else None
+            )
+            st.plotly_chart(fig_line, use_container_width=True)
 
-    fig = px.bar(graf, x="Faixa de Artigos", y="Quantidade", title="Quantidade de Artigos por Faixa Numérica")
-    st.plotly_chart(fig, use_container_width=True)
+    with col2:
+        if all(x in df.columns for x in ['status', 'valor']):
+            fig_pie = px.pie(
+                df,
+                values='valor',
+                names='status',
+                title="Distribuição por Status"
+            )
+            st.plotly_chart(fig_pie, use_container_width=True)
+        
+        if all(x in df.columns for x in ['regiao', 'valor']):
+            fig_map = px.scatter_geo(
+                df,
+                locations='regiao',
+                locationmode='country names',
+                size='valor',
+                title="Distribuição Geográfica",
+                projection='natural earth'
+            )
+            st.plotly_chart(fig_map, use_container_width=True)
+
+    # Tabela interativa
+    st.markdown("---")
+    st.header("Tabela de Dados")
+    st.dataframe(df, use_container_width=True)
 
 else:
-    st.info("""
-    App criado para explorar o **Código Penal Brasileiro (Decreto-Lei nº 2.848/1940)**.
-    
-    - Busca rápida por artigos
-    - Visualização analítica por gráfico
-    - Design simples e moderno
-
-    📚 Fonte: [Planalto.gov.br](https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm)
+    st.error("""
+    Não foi possível carregar os dados. Verifique:
+    1. O link de download direto do arquivo
+    2. A estrutura do dataframe
+    3. As permissões de acesso ao arquivo
     """)
